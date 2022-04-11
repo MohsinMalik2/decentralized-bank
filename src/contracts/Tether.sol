@@ -3,7 +3,7 @@ pragma solidity ^0.5.0;
 
 contract Tether {
 
-    string public name  = 'Tether';
+    string public name  = 'Moch Tether Token';
     string public symbol = 'Teth';
     uint256 public supplyTotal = 1000000000000000000000000;  //1 million tokens i.e. 1 ethereum == 10^18
     uint8 public decimal = 18;
