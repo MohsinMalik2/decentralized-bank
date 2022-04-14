@@ -46,7 +46,7 @@ contract Tether {
 
     //function is when the sender is the consumer of contract sending his token to someone else
 
-    function approve (address _spender, uint256 _value) public returns (bool success){
+    function approve(address _spender, uint256 _value) public returns (bool success){
         allowance[msg.sender][_spender] = _value;
         emit Approval(msg.sender, _spender, _value);
         return true;
@@ -54,12 +54,12 @@ contract Tether {
     
     function transferFrom(address _from,address _to,uint256 _value) public returns (bool success) {  
         require(_value <= balanceOf[_from]);
-        require(_value <= allowance[msg.sender][_from]);
+        require(_value <= allowance[_from][msg.sender]);
         // balanceOf[msg.sender] = balanceOf[msg.sender] - _value;
         balanceOf[_from] -= _value;  //optimized version of upper equation
         balanceOf[_to] += _value;  
 
-        allowance[_from][msg.sender] -= _value;
+        allowance[msg.sender][_from] -= _value;
         
         emit Transfer(_from, _to, _value);
         return true;

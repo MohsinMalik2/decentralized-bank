@@ -13,7 +13,7 @@ require("chai")
 contract('DecentralBank',([owner, customer]) => {
     //All the code will go here for testing
 
-    let tether, rwd, dBank
+    let tether, rwd, dBank;
     function converter(number){
         return web3.utils.toWei(number , 'ether')
     }
@@ -75,6 +75,61 @@ contract('DecentralBank',([owner, customer]) => {
 
             assert.equal(balance , converter('1000000'))   
         })
+
+       
     })
+
+
+    describe("Yield Farming Test", async () => {
+        
+        it("Balance Testing", async () => {
+
+            //CHeck balance of investors
+            let result;
+
+            result = await tether.balanceOf(customer);
+
+            assert.equal(result.toString() , converter('100'),'Customer mock wallet balance before staking') 
+            
+            //CHeck balance of Bank
+                        
+            let decentralBankBalance;
+
+            decentralBankBalance = await tether.balanceOf(dBank.address);
+
+            assert.equal(decentralBankBalance.toString() , converter('0'),'Decentral Bank balance before staking') 
+        })
+
+        it("Deposit Token Testing", async () => {
+
+            //Check whether deposit Tokens function is running or not
+            
+            // depositing 50eth from customer to decentral bank
+
+            //deposit approval
+            await tether.approve(dBank.address,converter('20'),{from:customer});
+            //deposit function
+            await dBank.depositTokens(converter('20'),{from:customer});
+
+            //CHeck updated balance of investors
+
+            let result;
+
+            result = await tether.balanceOf(customer);
+
+            assert.equal(result.toString() , converter('80'),'Customer mock wallet balance after staking') 
+
+             //CHeck updated balance of Bank
+            
+             let decentralBankBalance;
+
+             decentralBankBalance = await tether.balanceOf(dBank.address);
+ 
+             assert.equal(decentralBankBalance.toString() , converter('20'),'Decentral Bank balance after staking') 
+        })
+
+       
+    })
+  
 
 })
