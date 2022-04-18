@@ -107,9 +107,9 @@ contract('DecentralBank',([owner, customer]) => {
             // depositing 50eth from customer to decentral bank
 
             //deposit approval
-            await tether.approve(dBank.address,converter('20'),{from:customer});
+            await tether.approve(dBank.address,converter('100'),{from:customer});
             //deposit function
-            await dBank.depositTokens(converter('20'),{from:customer});
+            await dBank.depositTokens(converter('100'),{from:customer});
 
             //CHeck updated balance of investors
 
@@ -117,7 +117,7 @@ contract('DecentralBank',([owner, customer]) => {
 
             result = await tether.balanceOf(customer);
 
-            assert.equal(result.toString() , converter('80'),'Customer mock wallet balance after staking') 
+            assert.equal(result.toString() , converter('0'),'Customer mock wallet balance after staking') 
 
              //CHeck updated balance of Bank
             
@@ -125,10 +125,53 @@ contract('DecentralBank',([owner, customer]) => {
 
              decentralBankBalance = await tether.balanceOf(dBank.address);
  
-             assert.equal(decentralBankBalance.toString() , converter('20'),'Decentral Bank balance after staking') 
+             assert.equal(decentralBankBalance.toString() , converter('100'),'Decentral Bank balance after staking') 
+
+               //Check is Staking value of customemr
+            
+               let is_staking;
+
+               is_staking = await dBank.isStaking(customer);
+   
+               assert.equal(is_staking.toString() ,'true','Customer is Staking') ;
+
+            //Testing the issue token function
+            await dBank.issueTokens({from:owner}) //Owner because only he can call this function
+
+            await dBank.issueTokens({from:customer}).should.be.rejected; //Owner because only he can call this function
+
+           
+
         })
 
-       
+        it("Unstaking Token Testing", async () => {
+            await dBank.withdrawTokens({from:customer});  //Checking withdraw function working or not
+
+              //CHeck balance of investors
+              let result;
+
+              result = await tether.balanceOf(customer);
+  
+              assert.equal(result.toString() , converter('100'),'Customer mock wallet balance after unstaking') 
+              
+
+                //Update is Staking value of customer
+            
+                let is_staking;
+
+                is_staking = await dBank.isStaking(customer);
+    
+                assert.equal(is_staking.toString() ,'false','Customer is Staking') ;
+
+
+              //CHeck balance of Bank
+                          
+              let decentralBankBalance;
+  
+              decentralBankBalance = await tether.balanceOf(dBank.address);
+  
+              assert.equal(decentralBankBalance.toString() , converter('0'),'Decentral Bank balance after unstaking') 
+        });
     })
   
 
