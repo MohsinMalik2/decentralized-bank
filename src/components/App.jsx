@@ -4,7 +4,9 @@ import NavBar from "./navbar/NavBar";
 import FootBar from "./footer/FootBar";
 
 import Web3 from "web3";
-
+import Tether from '../truffle_abis/Tether.json'
+import Rwd from '../truffle_abis/RWD.json'
+import DBank from '../truffle_abis/DecentralBank.json'
 
 class App extends Component {
 
@@ -13,8 +15,10 @@ class App extends Component {
         await this.LoadWeb3();
         await this.LoadBchainData();
     }
+
     //Now to initialize the web3 into react
     //This function connects the app with the blockchain
+
     async LoadWeb3 (){
 
         if(window.ethereum){   // metamask detection in present active window
@@ -45,10 +49,65 @@ class App extends Component {
 
         //Load up the Tether Contract
 
-        const tetherDate = Tether.networks[networkId];
+        const tetherData = Tether.networks[networkId];
+
+        if(tetherData){
+            const tether = new web3.eth.Contract(Tether.abi,tetherData.address)
+            this.setState({tether});
+            console.log(tether,"tether")
+
+            let tetherBal = await tether.methods.balanceOf(this.state.account).call();
+            this.setState({tetherBalance: tetherBal.toString()});
+
+            console.log(this.state.tetherBalance,"tetherBalance")
 
 
+        }
+        else{
+            alert("Tether Contract not detected");
+        }
 
+         //Load up the Reward Tokken Contract
+
+         const rwdData = Rwd.networks[networkId];
+
+         if(rwdData){
+             const rwd = new web3.eth.Contract(Rwd.abi,rwdData.address)
+             this.setState({rwd});
+             console.log(rwd,"rwd")
+ 
+             let rwdBal = await rwd.methods.balanceOf(this.state.account).call();
+             this.setState({rwdBalance: rwdBal.toString()});
+ 
+             console.log(this.state.rwdBalance,"Reward Balance")
+ 
+ 
+         }
+         else{
+             alert("Reward Contract not detected");
+         }
+
+
+         //Load up the Decentral Bank Contract
+
+         const dBankData = DBank.networks[networkId];
+
+         if(dBankData){
+
+             const dBank = new web3.eth.Contract(DBank.abi,dBankData.address)
+             this.setState({dBank});
+             console.log(dBank,"dBank")
+ 
+             let dBankBal = await dBank.methods.stakingBalance[this.state.account];
+             this.setState({stakingBalance: dBankBal});
+ 
+             console.log(this.state.stakingBalance,"Staking Balance")
+ 
+ 
+         }
+         else{
+             alert("Reward Contract not detected");
+         }
 
     }
 
