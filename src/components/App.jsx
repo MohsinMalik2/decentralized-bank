@@ -9,7 +9,7 @@ import Web3 from "web3";
 class App extends Component {
 
 
-    async componentWillMount(){
+    async UNSAFE_componentWillMount(){
         await this.LoadWeb3();
         await this.LoadBchainData();
     }
@@ -36,12 +36,37 @@ class App extends Component {
 
        const web3 = window.web3
        const accounts = await web3.eth.getAccounts()
-       console.log(accounts)
+       this.setState({account:accounts[0]});
+       
+       //Getting the network Id
+
+       const networkId = await web3.eth.net.getId()
+        //    console.log(networkId);  // 5777
+
+        //Load up the Tether Contract
+
+        const tetherDate = Tether.networks[networkId];
+
+
+
+
     }
 
     constructor(props){
         super(props);
-        this.state = {account: '0x098h789sbbb8378'}
+
+        this.state = {
+            account: '0x0',
+            tether: {},
+            rwd: {},
+            dBank: {},
+            tetherBalance : "0",
+            rwdBalance: "0",
+            stakingBalance: "0",
+            loading: true
+
+        }
+
     }
     
     render(){
