@@ -7,6 +7,7 @@ import Web3 from "web3";
 import Tether from '../truffle_abis/Tether.json'
 import Rwd from '../truffle_abis/RWD.json'
 import DBank from '../truffle_abis/DecentralBank.json'
+import Main from "./Main";
 
 class App extends Component {
 
@@ -94,20 +95,22 @@ class App extends Component {
 
          if(dBankData){
 
-             const dBank = new web3.eth.Contract(DBank.abi,dBankData.address)
-             this.setState({dBank});
-             console.log(dBank,"dBank")
- 
-             let dBankBal = await dBank.methods.stakingBalance[this.state.account];
-             this.setState({stakingBalance: dBankBal});
- 
-             console.log(this.state.stakingBalance,"Staking Balance")
+            const dBank = new web3.eth.Contract(DBank.abi,dBankData.address)
+            this.setState({dBank});
+            console.log(dBank,"dBank")
+
+            let dBankBal = await dBank.methods.stakingBalance(this.state.account).call();
+            this.setState({stakingBalance: dBankBal.toString()});
+
+            console.log(this.state.stakingBalance,"Bank Balance")
  
  
          }
          else{
              alert("Reward Contract not detected");
          }
+
+         this.setState({loading: false});
 
     }
 
@@ -132,7 +135,20 @@ class App extends Component {
         return (
             <div className="container-fluid">
                 <NavBar accNo = {this.state.account}/>
-                
+                {this.state.loading ? <p className="text-dark text-center " style={{marginTop: "150px"}}> Loading Please .....</p> :
+                 <div className="container mt-5">
+                    <div className="row">
+                        <main role='main' className="col-lg-12 ml-auto mr-auto">
+                            <Main
+                            tetherBalance = {this.state.tetherBalance}
+                            rwdBalance = {this.state.rwdBalance}
+                            stakingBalance = {this.state.stakingBalance}
+                            />
+                        </main>
+                    </div>
+                </div>
+                }
+                    {console.log(this.state.loading)};
                 <FootBar/>
             </div>
         )
